@@ -105,6 +105,21 @@ export default {
           icon: 'mdi-chart-bubble',
           title: 'Inspire',
           to: '/inspire'
+        },
+        {
+          icon: 'mdi-login',
+          title: 'Login',
+          to: '/login'
+        },
+        {
+          icon: 'mdi-account-plus',
+          title: 'Register',
+          to: '/register'
+        },
+        {
+          icon: 'mdi-typewriter',
+          title: 'Create Post',
+          to: '/createpost'
         }
       ],
       miniVariant: false,
