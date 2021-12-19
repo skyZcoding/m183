@@ -52,9 +52,9 @@
       <v-spacer />
       <v-btn
         icon
-        @click.stop="rightDrawer = !rightDrawer"
+        @click="logout"
       >
-        <v-icon>mdi-menu</v-icon>
+        Log out
       </v-btn>
     </v-app-bar>
     <v-main>
@@ -62,23 +62,6 @@
         <Nuxt />
       </v-container>
     </v-main>
-    <v-navigation-drawer
-      v-model="rightDrawer"
-      :right="right"
-      temporary
-      fixed
-    >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
     <v-footer
       :absolute="!fixed"
       app
@@ -90,6 +73,9 @@
 
 <script>
 export default {
+  asyncData (app) {
+    // app.$fire.auth.signOut()
+  },
   data () {
     return {
       clipped: false,
@@ -109,12 +95,12 @@ export default {
         {
           icon: 'mdi-login',
           title: 'Login',
-          to: '/login'
+          to: '/auth/login'
         },
         {
           icon: 'mdi-account-plus',
           title: 'Register',
-          to: '/register'
+          to: '/auth/register'
         },
         {
           icon: 'mdi-typewriter',
@@ -126,6 +112,11 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Vuetify.js'
+    }
+  },
+  methods: {
+    logout () {
+      this.$fire.auth.signOut()
     }
   }
 }

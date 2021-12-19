@@ -13,7 +13,7 @@
           />
           <v-textarea
             label="Content"
-            no-resize="true"
+            no-resize
             counter="200"
             row-height="24"
           />
