@@ -9,14 +9,12 @@
       <v-card-text>
         <v-form>
           <v-text-field
-            label="Username"
-            prepend-icon="mdi-account-circle"
-          />
-          <v-text-field
+            v-model="auth.email"
             label="E-Mail"
             prepend-icon="mdi-email"
           />
           <v-text-field
+            v-model="auth.password"
             :type="showPassword ? 'text' : 'password'"
             label="Password"
             prepend-icon="mdi-lock"
@@ -34,7 +32,10 @@
       </v-card-text>
       <v-divider />
       <v-card-actions>
-        <v-btn color="success">
+        <v-btn
+          color="success"
+          @click="register"
+        >
           Register
         </v-btn>
         <v-spacer />
@@ -48,11 +49,24 @@
 
 <script>
 export default {
-  name: 'LoginPage',
+  name: 'RegisterPage',
 
   data () {
     return {
-      showPassword: false
+      showPassword: false,
+      auth: {
+        email: '',
+        password: ''
+      }
+    }
+  },
+  methods: {
+    register () {
+      const that = this
+      this.$fire.auth.createUserWithEmailAndPassword(this.auth.email, this.auth.password)
+        .then(function () {
+          that.$router.push('/')
+        })
     }
   }
 }
