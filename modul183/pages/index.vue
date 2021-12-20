@@ -10,7 +10,7 @@
           Homepage
         </v-card-title>
         <v-card-text>
-          Logged in as {{ $nuxt.$fire.auth.currentUser.email }}
+          Logged in as {{ $nuxt.$fire.auth.currentUser }}
         </v-card-text>
       </v-card>
     </v-col>

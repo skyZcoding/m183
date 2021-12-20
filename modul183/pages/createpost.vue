@@ -9,9 +9,11 @@
       <v-card-text>
         <v-form>
           <v-text-field
+            v-model="title"
             label="Title"
           />
           <v-textarea
+            v-model="content"
             label="Content"
             no-resize
             counter="200"
@@ -21,7 +23,10 @@
       </v-card-text>
       <v-divider />
       <v-card-actions>
-        <v-btn color="info">
+        <v-btn
+          color="info"
+          @click="createPost()"
+        >
           Create Post
         </v-btn>
       </v-card-actions>
@@ -38,21 +43,25 @@ export default {
       title: '',
       content: '',
       author: '',
-      date: ''
+      status: 'hidden'
     }
   },
 
   methods: {
-    // createPost () {
-    //   try {
-    //     this.$fire.firestore.collection('posts').doc().set({
-    //       name: this.name,
-    //       password: this.password
-    //     })
-    //   } catch (error) {
-    //     console.log(error)
-    //   }
-    // }
+    createPost () {
+      this.author = this.$store.state.user
+
+      try {
+        this.$fire.firestore.collection('posts').doc().set({
+          title: this.title,
+          content: this.content,
+          status: this.status,
+          author: this.author
+        })
+      } catch (error) {
+        console.log(error)
+      }
+    }
   }
 }
 </script>
