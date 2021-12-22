@@ -22,6 +22,7 @@
             @click:append="showPassword = !showPassword"
           />
           <v-text-field
+            v-model="auth.cpassword"
             :type="showPassword ? 'text' : 'password'"
             label="Confirm Password"
             prepend-icon="mdi-lock"
@@ -44,6 +45,11 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <v-snackbar
+      v-model="snackbar"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -54,19 +60,77 @@ export default {
   data () {
     return {
       showPassword: false,
+      snackbarText: 'No error message',
+      snackbar: true,
       auth: {
+        username: '',
         email: '',
-        password: ''
+        password: '',
+        cpassword: ''
       }
     }
   },
   methods: {
     register () {
-      const that = this
-      this.$fire.auth.createUserWithEmailAndPassword(this.auth.email, this.auth.password)
-        .then(function () {
-          that.$router.push('/')
-        })
+      if (this.validate()) {
+        const that = this
+        this.$fire.auth.createUserWithEmailAndPassword(this.auth.email, this.auth.password)
+          .then(function () {
+            that.$router.push('/')
+          })
+      }
+    },
+    hasLowerCase (str) {
+      return (/[a-z]/.test(str))
+    },
+    hasUpperCase (str) {
+      return (/[A-Z]/.test(str))
+    },
+    containsSimpleWords (password, name) {
+      return password.includes(name)
+    },
+    validate () {
+      const format = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/
+
+      console.log('validate')
+
+      if (this.auth.password !== this.auth.cpassword) {
+        this.snackbarText = 'The "Password" and the "Confirm Password" has to be equal'
+        this.snackbar = true
+        return false
+      }
+
+      /* if (this.containsSimpleWords(this.auth.password, this.auth.username)) {
+        this.snackbarText = 'Passwort cannot contain the name'
+        this.snackbar = true
+        return false
+      } */
+
+      if (!this.hasLowerCase(this.auth.password)) {
+        this.snackbarText = 'The "Password" has to contain lowercase characters'
+        this.snackbar = true
+        return false
+      }
+
+      if (!this.hasUpperCase(this.auth.password)) {
+        this.snackbarText = 'The "Password" has to contain uppercase characters'
+        this.snackbar = true
+        return false
+      }
+
+      if (!format.test(this.auth.password)) {
+        this.snackbarText = 'The "Password" has to contain special characters'
+        this.snackbar = true
+        return false
+      }
+
+      if (this.auth.password.length < 7) {
+        this.snackbarText = 'The "Password" has to be at least 8 characters'
+        this.snackbar = true
+        return false
+      }
+
+      return true
     }
   }
 }
