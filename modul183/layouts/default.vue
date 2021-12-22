@@ -9,7 +9,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in getFilteredItems()"
           :key="i"
           :to="item.to"
           router
@@ -51,10 +51,18 @@
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-btn
+        v-if="loggedIn()"
         icon
         @click="logout"
       >
         Log out
+      </v-btn>
+      <v-btn
+        v-else
+        to="/auth/login"
+        icon
+      >
+        Log in
       </v-btn>
     </v-app-bar>
     <v-main>
@@ -85,27 +93,26 @@ export default {
         {
           icon: 'mdi-apps',
           title: 'Welcome',
-          to: '/'
-        },
-        {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
-          to: '/inspire'
-        },
-        {
-          icon: 'mdi-login',
-          title: 'Login',
-          to: '/auth/login'
-        },
-        {
-          icon: 'mdi-account-plus',
-          title: 'Register',
-          to: '/auth/register'
+          to: '/',
+          show: 'always'
         },
         {
           icon: 'mdi-typewriter',
           title: 'Create Post',
-          to: '/createpost'
+          to: '/createpost',
+          show: 'loggedIn'
+        },
+        {
+          icon: 'mdi-login',
+          title: 'Login',
+          to: '/auth/login',
+          show: 'loggedOut'
+        },
+        {
+          icon: 'mdi-account-plus',
+          title: 'Register',
+          to: '/auth/register',
+          show: 'loggedOut'
         }
       ],
       miniVariant: false,
@@ -115,6 +122,25 @@ export default {
     }
   },
   methods: {
+    loggedIn () {
+      if (this.$store.state.user === null) {
+        return false
+      } else {
+        return true
+      }
+    },
+
+    getFilteredItems () {
+      const filteredArray = []
+      this.items.forEach((item) => {
+        if ((this.loggedIn() && item.show !== 'loggedOut') || (!this.loggedIn() && item.show !== 'loggedIn')) {
+          filteredArray.push(item)
+        }
+      })
+
+      return filteredArray
+    },
+
     logout () {
       this.$fire.auth.signOut()
     }
