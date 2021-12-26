@@ -53,6 +53,11 @@
         </v-card-text>
       </v-card>
     </div>
+    <v-snackbar
+      v-model="snackbar"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -64,7 +69,9 @@ export default {
       slug: '',
       comments: [],
       newComment: '',
-      author: ''
+      author: '',
+      snackbarText: 'No error message',
+      snackbar: false
     }
   },
 
@@ -80,9 +87,8 @@ export default {
   },
 
   methods: {
-    // TODO: Only allow to post comments if user is logged in
     postComment () {
-      if (this.validateComment() === '') {
+      if (this.validateComment()) {
         this.author = this.$store.state.user
 
         try {
@@ -97,18 +103,22 @@ export default {
         } catch (error) {
           console.log(error)
         }
-      } else {
-        console.log('error: ' + this.validateComment())
-        // TODO: Show error message for validation
       }
     },
     validateComment () {
-      let errorMsg = ''
       if (this.newComment.length === 0 || this.newComment.length > 200) {
-        errorMsg = 'The comment must have between 1 and 200 characters'
+        this.snackbarText = 'The comment must have between 1 and 200 characters'
+        this.snackbar = true
+        return false
       }
 
-      return errorMsg
+      if (this.$store.state.user === null) {
+        this.snackbarText = 'You must be logged in to write a comment'
+        this.snackbar = true
+        return false
+      }
+
+      return true
     }
   }
 }

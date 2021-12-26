@@ -33,6 +33,11 @@
         </v-btn>
       </v-card-actions>
     </v-card>
+    <v-snackbar
+      v-model="snackbar"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -45,13 +50,15 @@ export default {
       title: '',
       content: '',
       author: '',
-      status: 'hidden'
+      status: 'hidden',
+      snackbar: false,
+      snackbarText: ''
     }
   },
 
   methods: {
     createPost () {
-      if (this.validatePost() === '') {
+      if (this.validatePost()) {
         this.author = this.$store.state.user
 
         try {
@@ -67,21 +74,21 @@ export default {
         } catch (error) {
           console.log(error)
         }
-      } else {
-        console.log('error: ' + this.validatePost())
-        // TODO: Show error message for validation
       }
     },
     validatePost () {
-      let errorMsg = ''
       if (this.title.length === 0 || this.title.length > 50) {
-        errorMsg = 'The title must have between 1 and 50 characters'
+        this.snackbarText = 'The title must have between 1 and 50 characters'
+        this.snackbar = true
+        return false
       }
       if (this.content.length === 0 || this.content.length > 2500) {
-        errorMsg = 'The content must have between 1 and 2500 characters'
+        this.snackbarText = 'The content must have between 1 and 2500 characters'
+        this.snackbar = true
+        return false
       }
 
-      return errorMsg
+      return true
     }
   }
 }

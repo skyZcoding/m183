@@ -50,10 +50,6 @@
     </v-card>
     <v-snackbar
       v-model="snackbar"
-      :timeout="4000"
-      absolute
-      bottom
-      right
     >
       {{ snackbarText }}
     </v-snackbar>
@@ -77,15 +73,16 @@ export default {
   },
   methods: {
     login () {
-      const that = this
-      this.$fire.auth.signInWithEmailAndPassword(this.auth.email, this.auth.password)
-        .catch(function (error) {
-          that.snackbarText = error.message
-          that.snackbar = true
-        }).then((user) => {
-          this.$router.push('/')
-        }
-        )
+      if (this.validate()) {
+        const that = this
+        this.$fire.auth.signInWithEmailAndPassword(this.auth.email, this.auth.password)
+          .catch(function (error) {
+            that.snackbarText = error.message
+            that.snackbar = true
+          }).then((user) => {
+            this.$router.push('/')
+          })
+      }
     },
     forgotPassword () {
       this.$fire.auth.sendPasswordResetEmail(this.auth.email)
@@ -97,6 +94,15 @@ export default {
           this.snackbarText = error.message
           this.snackbar = true
         })
+    },
+    validate () {
+      if (this.auth.email.length === 0 || this.auth.password.length === 0) {
+        this.snackbarText = 'The input fields can not be empty'
+        this.snackbar = true
+        return false
+      }
+
+      return true
     }
   }
 }

@@ -3,17 +3,21 @@
     <v-col cols="12" sm="8" md="6">
       <div class="home-page">
         <h2>Latest Posts</h2>
-        <div class="articles">
-          <div v-for="(post, idx) of posts" :key="idx" class="article">
-            <nuxt-link :to="'/blog/' + post.id">
-              <div class="article-inner">
-                <div class="detail">
-                  <h3>{{ post.title }}</h3>
-                  <p>{{ post.content }}</p>
-                </div>
-              </div>
-            </nuxt-link>
-          </div>
+        <div class="posts">
+          <v-card v-for="(post, idx) of posts" :key="idx" class="post">
+            <v-card-title>
+              <nuxt-link :to="'/blog/' + post.id">
+                {{ post.title }}
+              </nuxt-link>
+            </v-card-title>
+            <v-card-text class="post-content">
+              {{ post.content }}
+            </v-card-text>
+            <v-divider />
+            <v-card-text class="author">
+              {{ post.author.email }}
+            </v-card-text>
+          </v-card>
         </div>
       </div>
     </v-col>
@@ -56,42 +60,21 @@ export default {
 </script>
 
 <style>
-  .home-page {
-    padding: 50px 30px;
-  }
-  h2 {
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  .articles {
-    margin: 0 auto;
-    max-width: 800px;
-  }
-  .article {
-    margin-bottom: 15px;
-    min-width: 40%;
-  }
-  .article-inner {
-    padding: 15px;
-    background: #FFF;
-    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-    display: flex;
-  }
-  .article-inner .detail {
-    padding-left: 15px;
-    padding-right: 15px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    height: 100px;
-  }
-  h3 {
-    font-size: 24px;
-    text-decoration: none;
-  }
-  p {
-    color: #888;
-    font-size: 18px;
-    text-decoration: none;
-  }
+.post {
+  margin-top: 4% !important;
+}
+
+.post-content {
+  font-size: 1em;
+  max-height: 100px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.author {
+  font-size: 0.8em;
+  font-style: italic;
+  text-align: right;
+}
 </style>
