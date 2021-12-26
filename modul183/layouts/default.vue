@@ -99,7 +99,7 @@ export default {
         {
           icon: 'mdi-typewriter',
           title: 'Create Post',
-          to: '/createpost',
+          to: '/blog/createpost',
           show: 'loggedIn'
         },
         {
