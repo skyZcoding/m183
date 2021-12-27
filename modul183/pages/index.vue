@@ -43,12 +43,14 @@ export default {
   },
 
   async fetch () {
-    // TODO: Only fetch posts that have status: public or are from current user
+    // TODO: Show hidden posts if user is admin
     const snapshot = await this.$fire.firestore.collection('posts').get()
     snapshot.forEach((post) => {
       this.tmpPost = post.data()
-      this.tmpPost.id = post.id
-      this.posts.push(this.tmpPost)
+      if (this.tmpPost.status === 'published' || this.tmpPost.author.uid === this.$store.state.user.uid) {
+        this.tmpPost.id = post.id
+        this.posts.push(this.tmpPost)
+      }
     })
     console.log(this.posts)
   },
