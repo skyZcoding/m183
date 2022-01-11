@@ -9,7 +9,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in getFilteredItems()"
+          v-for="(item, i) in filteredArray"
           :key="i"
           :to="item.to"
           router
@@ -115,30 +115,43 @@ export default {
           show: 'loggedOut'
         }
       ],
+      filteredArray: [],
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'Vuetify.js'
     }
   },
+  created () {
+    this.getFilteredItems()
+  },
   methods: {
     loggedIn () {
-      if (this.$store.state.user === null) {
-        return false
-      } else {
-        return true
+      return !(this.$store.state.user === null)
+    },
+
+    async isSmsAuth () {
+      console.log('isSmsAuth')
+      if (this.loggedIn()) {
+        const userId = this.$store.state.user.uid
+        const snapshot = await this.$fire.firestore.collection('users').where('uid', '==', userId).get()
+        let smsAuth = true
+        snapshot.forEach((temp) => {
+          const user = temp.data()
+          smsAuth = user.smsAuth
+        })
+        return smsAuth
       }
     },
 
-    getFilteredItems () {
-      const filteredArray = []
+    async getFilteredItems () {
+      this.filteredArray = []
+      const smsAuth = await this.isSmsAuth()
       this.items.forEach((item) => {
-        if ((this.loggedIn() && item.show !== 'loggedOut') || (!this.loggedIn() && item.show !== 'loggedIn')) {
-          filteredArray.push(item)
+        if ((this.loggedIn() && smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !smsAuth)) && item.show !== 'loggedIn')) {
+          this.filteredArray.push(item)
         }
       })
-
-      return filteredArray
     },
 
     logout () {

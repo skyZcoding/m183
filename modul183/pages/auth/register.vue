@@ -14,6 +14,11 @@
             prepend-icon="mdi-email"
           />
           <v-text-field
+            v-model="auth.mobile_number"
+            label="Mobile number"
+            prepend-icon="mdi-phone"
+          />
+          <v-text-field
             v-model="auth.password"
             :type="showPassword ? 'text' : 'password'"
             label="Password"
@@ -63,8 +68,8 @@ export default {
       snackbarText: 'No error message',
       snackbar: true,
       auth: {
-        username: '',
         email: '',
+        mobile_number: '',
         password: '',
         cpassword: ''
       }
@@ -75,7 +80,13 @@ export default {
       if (this.validate()) {
         const that = this
         this.$fire.auth.createUserWithEmailAndPassword(this.auth.email, this.auth.password)
-          .then(function () {
+          .then(function (data) {
+            that.$fire.firestore.collection('users').doc().set({
+              isAdmin: false,
+              smsAuth: true,
+              mobile_number: that.auth.mobile_number,
+              uid: data.user.uid
+            })
             that.$router.push('/')
           })
       }
@@ -86,25 +97,14 @@ export default {
     hasUpperCase (str) {
       return (/[A-Z]/.test(str))
     },
-    containsSimpleWords (password, name) {
-      return password.includes(name)
-    },
     validate () {
       const format = /[ `!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?~]/
-
-      console.log('validate')
 
       if (this.auth.password !== this.auth.cpassword) {
         this.snackbarText = 'The "Password" and the "Confirm Password" has to be equal'
         this.snackbar = true
         return false
       }
-
-      /* if (this.containsSimpleWords(this.auth.password, this.auth.username)) {
-        this.snackbarText = 'Passwort cannot contain the name'
-        this.snackbar = true
-        return false
-      } */
 
       if (!this.hasLowerCase(this.auth.password)) {
         this.snackbarText = 'The "Password" has to contain lowercase characters'
