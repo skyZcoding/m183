@@ -67,7 +67,8 @@ export default {
       snackbar: false,
       auth: {
         email: '',
-        password: ''
+        password: '',
+        verificationCode: ''
       }
     }
   },
@@ -79,7 +80,8 @@ export default {
           .catch(function (error) {
             that.snackbarText = error.message
             that.snackbar = true
-          }).then((user) => {
+          }).then((data) => {
+            this.sendSmsCode()
             this.$router.push('/')
           })
       }
@@ -103,6 +105,39 @@ export default {
       }
 
       return true
+    },
+    async sendSmsCode () {
+      this.generateVerificationCode()
+
+      const payload = {
+        mobileNumber: await this.getUserMobileNumber(),
+        message: 'Your verification code is #' + this.auth.verificationCode + '.'
+      }
+      console.log('test')
+      console.log(payload)
+
+      fetch('https://m183.gibz-informatik.ch/api/sms/message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Api-Key': 'test'
+        },
+        body: JSON.stringify(payload)
+      })
+    },
+    async getUserMobileNumber () {
+      const currentUser = this.$fire.auth.currentUser
+      const snapshot = await this.$fire.firestore.collection('users').where('uid', '==', currentUser.uid).get()
+      let mobileNumber = ''
+      snapshot.forEach((temp) => {
+        const user = temp.data()
+        mobileNumber = user.mobile_number
+      })
+
+      return mobileNumber
+    },
+    generateVerificationCode () {
+      this.auth.verificationCode = Math.floor(Math.random() * 999999)
     }
   }
 }
