@@ -122,7 +122,18 @@ export default {
       title: 'Vuetify.js'
     }
   },
-  created () {
+  mounted () {
+    console.log('mount')
+    this.getFilteredItems()
+  },
+  activated () {
+    console.log('active')
+  },
+  update () {
+    console.log('update')
+  },
+  create () {
+    console.log('create')
     this.getFilteredItems()
   },
   methods: {
@@ -154,7 +165,11 @@ export default {
       })
     },
 
-    logout () {
+    async logout () {
+      const currentUser = this.$fire.auth.currentUser
+      await this.$fire.firestore.collection('users').doc(currentUser.uid).update({
+        smsAuth: true
+      })
       this.$fire.auth.signOut()
     }
   }

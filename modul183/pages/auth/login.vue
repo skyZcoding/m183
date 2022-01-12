@@ -53,18 +53,23 @@
     >
       {{ snackbarText }}
     </v-snackbar>
+    <SmsAuth ref="dialog" />
   </v-app>
 </template>
 
 <script>
+import SmsAuth from '../../components/SmsAuth.vue'
+
 export default {
   name: 'LoginPage',
+  components: { SmsAuth },
 
   data () {
     return {
       showPassword: false,
       snackbarText: 'No error message',
       snackbar: false,
+      loginSuccess: false,
       auth: {
         email: '',
         password: '',
@@ -81,8 +86,8 @@ export default {
             that.snackbarText = error.message
             that.snackbar = true
           }).then((data) => {
-            this.sendSmsCode()
-            this.$router.push('/')
+            that.loginSuccess = true
+            that.$refs.dialog.showDialog()
           })
       }
     },
@@ -105,39 +110,6 @@ export default {
       }
 
       return true
-    },
-    async sendSmsCode () {
-      this.generateVerificationCode()
-
-      const payload = {
-        mobileNumber: await this.getUserMobileNumber(),
-        message: 'Your verification code is #' + this.auth.verificationCode + '.'
-      }
-      console.log('test')
-      console.log(payload)
-
-      fetch('https://m183.gibz-informatik.ch/api/sms/message', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Api-Key': 'test'
-        },
-        body: JSON.stringify(payload)
-      })
-    },
-    async getUserMobileNumber () {
-      const currentUser = this.$fire.auth.currentUser
-      const snapshot = await this.$fire.firestore.collection('users').where('uid', '==', currentUser.uid).get()
-      let mobileNumber = ''
-      snapshot.forEach((temp) => {
-        const user = temp.data()
-        mobileNumber = user.mobile_number
-      })
-
-      return mobileNumber
-    },
-    generateVerificationCode () {
-      this.auth.verificationCode = Math.floor(Math.random() * 999999)
     }
   }
 }

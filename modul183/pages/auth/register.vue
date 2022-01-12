@@ -81,7 +81,7 @@ export default {
         const that = this
         this.$fire.auth.createUserWithEmailAndPassword(this.auth.email, this.auth.password)
           .then(function (data) {
-            that.$fire.firestore.collection('users').doc().set({
+            that.$fire.firestore.collection('users').doc(data.user.uid).set({
               isAdmin: false,
               smsAuth: true,
               mobile_number: that.auth.mobile_number,
