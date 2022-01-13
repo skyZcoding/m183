@@ -27,25 +27,37 @@
       </v-card-text>
       <v-divider />
       <v-card-actions>
-        <v-btn
-          color="success"
-          to="/auth/register"
-        >
-          Register
-        </v-btn>
-        <v-spacer />
-        <v-btn
-          color="info"
-          @click="login"
-        >
-          Login
-        </v-btn>
-        <v-btn
-          depressed
-          @click="forgotPassword"
-        >
-          Forgot Password
-        </v-btn>
+        <v-container>
+          <v-row class="mb-2">
+            <v-btn
+              color="success"
+              to="/auth/register"
+            >
+              Register
+            </v-btn>
+            <v-spacer />
+            <v-btn
+              color="info"
+              class="mr-2"
+              @click="login"
+            >
+              Login
+            </v-btn>
+            <v-btn
+              depressed
+              @click="forgotPassword"
+            >
+              Forgot Password
+            </v-btn>
+          </v-row>
+          <v-row>
+            <v-btn
+              @click="googleSignIn"
+            >
+              Sign In with Google
+            </v-btn>
+          </v-row>
+        </v-container>
       </v-card-actions>
     </v-card>
     <v-snackbar
@@ -78,6 +90,18 @@ export default {
     }
   },
   methods: {
+    googleSignIn () {
+      const provider = new this.$fireModule.auth.GoogleAuthProvider()
+      this.$fireModule.auth().signInWithPopup(provider)
+        .then((data) => {
+          this.loginSuccess = true
+          this.$router.push('/')
+        })
+        .catch(function (error) {
+          this.snackbarText = error.message
+          this.snackbar = true
+        })
+    },
     login () {
       if (this.validate()) {
         const that = this

@@ -142,7 +142,6 @@ export default {
     },
 
     async isSmsAuth () {
-      console.log('isSmsAuth')
       if (this.loggedIn()) {
         const userId = this.$store.state.user.uid
         const snapshot = await this.$fire.firestore.collection('users').where('uid', '==', userId).get()
@@ -167,10 +166,16 @@ export default {
 
     async logout () {
       const currentUser = this.$fire.auth.currentUser
-      await this.$fire.firestore.collection('users').doc(currentUser.uid).update({
-        smsAuth: true
-      })
-      this.$fire.auth.signOut()
+      if (currentUser.providerData[0].providerId === 'password') {
+        await this.$fire.firestore.collection('users').doc(currentUser.uid).update({
+          smsAuth: false
+        })
+        await this.$fire.auth.signOut()
+        this.$router.push('/auth/login')
+      } else {
+        await this.$fire.auth.signOut()
+        this.$router.push('/auth/login')
+      }
     }
   }
 }

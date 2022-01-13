@@ -106,7 +106,7 @@ export default {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Api-Key': 'OAA4ADYAMwA5ADgAOQA1ADAAMQA3ADQAMQA1ADcAOAA1ADcA'
+          'X-Api-Key': 'test'
         },
         body: JSON.stringify(payload)
       })
@@ -124,6 +124,7 @@ export default {
 
         this.auth.success = true
         this.dialog = false
+        this.auth.verificationCode = ''
         this.$router.push('/')
       } else {
         this.error = 'The verification code is wrong'
