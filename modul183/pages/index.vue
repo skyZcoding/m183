@@ -44,15 +44,17 @@ export default {
 
   async fetch () {
     // TODO: Show hidden posts if user is admin
-    const snapshot = await this.$fire.firestore.collection('posts').get()
-    snapshot.forEach((post) => {
-      this.tmpPost = post.data()
-      if (this.tmpPost.status === 'published' || this.tmpPost.author.uid === this.$store.state.user.uid) {
-        this.tmpPost.id = post.id
-        this.posts.push(this.tmpPost)
-      }
-    })
-    console.log(this.posts)
+    if (!(this.$store.state.user === null)) {
+      const snapshot = await this.$fire.firestore.collection('posts').get()
+      snapshot.forEach((post) => {
+        this.tmpPost = post.data()
+        if (this.tmpPost.status === 'published' || this.tmpPost.author.uid === this.$store.state.user.uid) {
+          this.tmpPost.id = post.id
+          this.posts.push(this.tmpPost)
+        }
+      })
+      console.log(this.posts)
+    }
   },
 
   methods: {

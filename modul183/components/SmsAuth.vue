@@ -62,9 +62,10 @@ export default {
       code: '',
       dialog: false,
       auth: {
-        email: '',
+        success: false,
         mobileNumber: '',
-        verificationCode: ''
+        verificationCode: '',
+        generationDate: ''
       }
     }
   },
@@ -73,7 +74,7 @@ export default {
       if (visible) {
         this.createVerificationCode()
         this.getMobileNumber()
-      } else {
+      } else if (!this.auth.success) {
         this.$fire.auth.signOut()
       }
     }
@@ -84,6 +85,7 @@ export default {
     },
     createVerificationCode () {
       this.auth.verificationCode = Math.floor(Math.random() * (999999 - 100000) + 100000)
+      this.auth.generationDate = new Date()
     },
     async getMobileNumber () {
       const currentUser = this.$fire.auth.currentUser
@@ -104,18 +106,23 @@ export default {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Api-Key': 'test'
+          'X-Api-Key': 'OAA4ADYAMwA5ADgAOQA1ADAAMQA3ADQAMQA1ADcAOAA1ADcA'
         },
         body: JSON.stringify(payload)
       })
     },
     async submitVerificationCode () {
       const currentUser = this.$fire.auth.currentUser
-      // eslint-disable-next-line eqeqeq
-      if (this.auth.verificationCode == this.code) {
+
+      if (new Date(this.auth.generationDate.getTime() + (5 * 60000)) < new Date()) {
+        this.error = 'Verification code expired.'
+        // eslint-disable-next-line eqeqeq
+      } else if (this.auth.verificationCode == this.code) {
         await this.$fire.firestore.collection('users').doc(currentUser.uid).update({
           smsAuth: true
         })
+
+        this.auth.success = true
         this.dialog = false
         this.$router.push('/')
       } else {
