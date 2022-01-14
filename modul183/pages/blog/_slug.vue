@@ -18,12 +18,18 @@
         <v-card-text class="author">
           {{ post.author.email }}
           <v-btn
-            v-if="post.author.uid === author.uid"
+            v-if="post.author.uid === author.uid && post.status !== 'deleted'"
             @click="deletePost"
           >
             <v-icon>
               mdi-delete
             </v-icon>
+          </v-btn>
+          <v-btn
+            v-else-if="post.author.uid === author.uid && post.status === 'deleted'"
+            @click="restorePost"
+          >
+            Restore
           </v-btn>
         </v-card-text>
       </v-card>
@@ -144,6 +150,15 @@ export default {
     deletePost () {
       this.$fire.firestore.collection('posts').doc(this.slug).update({
         status: 'deleted'
+      })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .then(this.$router.push('/'))
+    },
+    restorePost () {
+      this.$fire.firestore.collection('posts').doc(this.slug).update({
+        status: 'hidden'
       })
         .catch(function (error) {
           console.log(error)

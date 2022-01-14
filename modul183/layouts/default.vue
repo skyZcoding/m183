@@ -103,6 +103,12 @@ export default {
           show: 'loggedIn'
         },
         {
+          icon: 'mdi-view-dashboard',
+          title: 'User Dashboard',
+          to: '/userdashboard',
+          show: 'loggedIn'
+        },
+        {
           icon: 'mdi-login',
           title: 'Login',
           to: '/auth/login',
