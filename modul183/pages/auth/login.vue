@@ -102,8 +102,25 @@ export default {
           this.snackbar = true
         })
     },
-    login () {
-      if (this.validate()) {
+    async login () {
+      let loginAttempt = ''
+
+      const snapshot = await this.$fire.firestore.collection('loginAttempts').where('email', '==', this.auth.email).get()
+      snapshot.forEach((temp) => {
+        loginAttempt = temp.data()
+      })
+
+      if (loginAttempt.attempts === 3 && new Date(new Date(Date.parse(loginAttempt.lastAttempt)).getTime() + (5 * 60000)) > new Date()) {
+        this.snackbarText = 'You are banned for 5 min'
+        this.snackbar = true
+      } else if (this.validate()) {
+        if (loginAttempt.attempts === 3 && new Date(new Date(Date.parse(loginAttempt.lastAttempt)).getTime() + (5 * 60000)) < new Date()) {
+          await this.$fire.firestore.collection('loginAttempts').doc(this.auth.email).set({
+            email: this.auth.email,
+            attempts: 0,
+            lastAttempt: new Date().toString()
+          })
+        }
         const that = this
         this.$fire.auth.signInWithEmailAndPassword(this.auth.email, this.auth.password)
           .then((data) => {
@@ -111,6 +128,7 @@ export default {
             that.$refs.dialog.showDialog()
           })
           .catch(function (error) {
+            that.failedLogin()
             that.snackbarText = error.message
             that.snackbar = true
           })
@@ -135,6 +153,32 @@ export default {
       }
 
       return true
+    },
+    async failedLogin () {
+      try {
+        let newAttempts = 0
+        let newLastAttempt = ''
+
+        const snapshot = await this.$fire.firestore.collection('loginAttempts').where('email', '==', this.auth.email).get()
+        snapshot.forEach((temp) => {
+          const loginAttempt = temp.data()
+          newAttempts = loginAttempt.attempts
+        })
+
+        newAttempts = newAttempts + 1
+        newLastAttempt = new Date().toString()
+
+        await this.$fire.firestore.collection('loginAttempts').doc(this.auth.email).update({
+          attempts: newAttempts,
+          lastAttempt: newLastAttempt
+        })
+      } catch (error) {
+        await this.$fire.firestore.collection('loginAttempts').doc(this.auth.email).set({
+          email: this.auth.email,
+          attempts: 0,
+          lastAttempt: new Date().toString()
+        })
+      }
     }
   }
 }

@@ -14,7 +14,6 @@
     "@nuxtjs/axios": "^5.13.6",
     "@nuxtjs/firebase": "^8.1.1",
     "core-js": "^3.15.1",
-    "express": "^4.17.2",
     "firebase": "^9.6.0",
     "nuxt": "^2.15.7",
     "vuefire": "^2.2.5",

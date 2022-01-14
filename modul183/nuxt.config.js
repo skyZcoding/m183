@@ -1,9 +1,6 @@
 import colors from 'vuetify/es5/util/colors'
 
 export default {
-  serverMiddleware: [
-    { path: '/api', handler: '~/api/postsAPI.js' }
-  ],
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: true,
 
