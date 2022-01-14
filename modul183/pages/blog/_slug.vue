@@ -6,18 +6,39 @@
     <p v-else-if="$fetchState.error">
       Error while fetching post
     </p>
-    <v-card v-else class="post">
-      <v-card-title>
-        <h1>{{ post.title }}</h1>
-      </v-card-title>
-      <v-card-text>
-        {{ post.content }}
-      </v-card-text>
-      <v-divider />
-      <v-card-text class="author">
-        {{ post.author.email }}
-      </v-card-text>
-    </v-card>
+    <div v-else>
+      <v-card v-if="post">
+        <v-card-title>
+          <h1>{{ post.title }}</h1>
+        </v-card-title>
+        <v-card-text>
+          {{ post.content }}
+        </v-card-text>
+        <v-divider />
+        <v-card-text class="author">
+          {{ post.author.email }}
+          <v-btn
+            v-if="post.author.uid === author.uid && post.status !== 'deleted'"
+            @click="deletePost"
+          >
+            <v-icon>
+              mdi-delete
+            </v-icon>
+          </v-btn>
+          <v-btn
+            v-else-if="post.author.uid === author.uid && post.status === 'deleted'"
+            @click="restorePost"
+          >
+            Restore
+          </v-btn>
+        </v-card-text>
+      </v-card>
+      <v-card v-else>
+        <v-card-text>
+          Error while fetching post
+        </v-card-text>
+      </v-card>
+    </div>
     <v-card class="newComment">
       <v-card-title>
         <h3>Add a comment</h3>
@@ -77,20 +98,26 @@ export default {
 
   async fetch () {
     this.slug = this.$route.params.slug
+    if (this.$store.state.user) {
+      this.author = this.$store.state.user
+    }
     const postInfo = await this.$fire.firestore.collection('posts').doc(this.slug).get()
-    this.post = postInfo.data()
+    console.log(postInfo.data().author)
+    // TODO: Get post if user is admin
+    if (postInfo.data().status === 'published' || postInfo.data().author.uid === this.author.uid) {
+      this.post = postInfo.data()
 
-    const commentsInfo = await this.$fire.firestore.collection('comments').where('postSlug', '==', this.slug).get()
-    commentsInfo.forEach((comment) => {
-      this.comments.push(comment.data())
-    })
+      // Get comments
+      const commentsInfo = await this.$fire.firestore.collection('comments').where('postSlug', '==', this.slug).get()
+      commentsInfo.forEach((comment) => {
+        this.comments.push(comment.data())
+      })
+    }
   },
 
   methods: {
     postComment () {
       if (this.validateComment()) {
-        this.author = this.$store.state.user
-
         try {
           this.$fire.firestore.collection('comments').doc().set({
             content: this.newComment,
@@ -119,6 +146,24 @@ export default {
       }
 
       return true
+    },
+    deletePost () {
+      this.$fire.firestore.collection('posts').doc(this.slug).update({
+        status: 'deleted'
+      })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .then(this.$router.push('/'))
+    },
+    restorePost () {
+      this.$fire.firestore.collection('posts').doc(this.slug).update({
+        status: 'hidden'
+      })
+        .catch(function (error) {
+          console.log(error)
+        })
+        .then(this.$router.push('/'))
     }
   }
 }

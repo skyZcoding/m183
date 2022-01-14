@@ -2,7 +2,7 @@
   <v-row justify="center" align="center">
     <v-col cols="12" sm="8" md="6">
       <div class="home-page">
-        <h2>Latest Posts</h2>
+        <h2>Your Posts</h2>
         <div class="posts">
           <v-card v-for="(post, idx) of posts" :key="idx" class="post">
             <v-card-title>
@@ -43,22 +43,19 @@ export default {
   },
 
   async fetch () {
-    // TODO: Show hidden posts if user is admin
-    const snapshot = await this.$fire.firestore.collection('posts').get()
+    const snapshot = await this.$fire.firestore.collection('posts').where('author', '==', this.returnUser()).get()
     snapshot.forEach((post) => {
       this.tmpPost = post.data()
-      if (this.tmpPost.status === 'published' || (this.tmpPost.author.uid === this.returnUserUid() && this.tmpPost.status !== 'deleted')) {
-        this.tmpPost.id = post.id
-        this.posts.push(this.tmpPost)
-      }
+      this.tmpPost.id = post.id
+      this.posts.push(this.tmpPost)
     })
     console.log(this.posts)
   },
 
   methods: {
-    returnUserUid () {
+    returnUser () {
       if (this.$store.state.user !== null) {
-        return this.$store.state.user.uid
+        return this.$store.state.user
       } else {
         return 'empty'
       }
