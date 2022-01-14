@@ -106,12 +106,13 @@ export default {
       if (this.validate()) {
         const that = this
         this.$fire.auth.signInWithEmailAndPassword(this.auth.email, this.auth.password)
+          .then((data) => {
+            that.loginSuccess = true
+            that.$refs.dialog.showDialog()
+          })
           .catch(function (error) {
             that.snackbarText = error.message
             that.snackbar = true
-          }).then((data) => {
-            that.loginSuccess = true
-            that.$refs.dialog.showDialog()
           })
       }
     },
