@@ -129,7 +129,6 @@ export default {
 
     isSmsAuth () {
       if (this.loggedIn()) {
-        console.log('executing isSmsAuth')
         const userId = this.$store.state.user.uid
         this.$fire.firestore.collection('users').doc(userId)
           .onSnapshot((doc) => {
@@ -140,12 +139,21 @@ export default {
 
     getFilteredItems () {
       const filteredArray = []
+      const currentUser = this.$fire.auth.currentUser
       this.isSmsAuth()
-      this.items.forEach((item) => {
-        if ((this.loggedIn() && this.smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !this.smsAuth)) && item.show !== 'loggedIn')) {
-          filteredArray.push(item)
-        }
-      })
+      if (currentUser && currentUser.providerData[0].providerId !== 'password') {
+        this.items.forEach((item) => {
+          if ((this.loggedIn() && item.show !== 'loggedOut') || (!this.loggedIn() && item.show !== 'loggedIn')) {
+            filteredArray.push(item)
+          }
+        })
+      } else {
+        this.items.forEach((item) => {
+          if ((this.loggedIn() && this.smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !this.smsAuth)) && item.show !== 'loggedIn')) {
+            filteredArray.push(item)
+          }
+        })
+      }
 
       return filteredArray
     },
