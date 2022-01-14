@@ -9,7 +9,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in filteredArray"
+          v-for="(item, i) in getFilteredItems()"
           :key="i"
           :to="item.to"
           router
@@ -115,53 +115,39 @@ export default {
           show: 'loggedOut'
         }
       ],
-      filteredArray: [],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'Vuetify.js',
+      smsAuth: false
     }
-  },
-  mounted () {
-    console.log('mount')
-    this.getFilteredItems()
-  },
-  activated () {
-    console.log('active')
-  },
-  update () {
-    console.log('update')
-  },
-  create () {
-    console.log('create')
-    this.getFilteredItems()
   },
   methods: {
     loggedIn () {
       return !(this.$store.state.user === null)
     },
 
-    async isSmsAuth () {
+    isSmsAuth () {
       if (this.loggedIn()) {
+        console.log('executing isSmsAuth')
         const userId = this.$store.state.user.uid
-        const snapshot = await this.$fire.firestore.collection('users').where('uid', '==', userId).get()
-        let smsAuth = true
-        snapshot.forEach((temp) => {
-          const user = temp.data()
-          smsAuth = user.smsAuth
-        })
-        return smsAuth
+        this.$fire.firestore.collection('users').doc(userId)
+          .onSnapshot((doc) => {
+            this.smsAuth = doc.data().smsAuth
+          })
       }
     },
 
-    async getFilteredItems () {
-      this.filteredArray = []
-      const smsAuth = await this.isSmsAuth()
+    getFilteredItems () {
+      const filteredArray = []
+      this.isSmsAuth()
       this.items.forEach((item) => {
-        if ((this.loggedIn() && smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !smsAuth)) && item.show !== 'loggedIn')) {
-          this.filteredArray.push(item)
+        if ((this.loggedIn() && this.smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !this.smsAuth)) && item.show !== 'loggedIn')) {
+          filteredArray.push(item)
         }
       })
+
+      return filteredArray
     },
 
     async logout () {
