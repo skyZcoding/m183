@@ -102,6 +102,7 @@ export default {
           this.snackbar = true
         })
     },
+    // BUG: refreshing when sms auth shows up logs you in
     async login () {
       let loginAttempt = ''
 

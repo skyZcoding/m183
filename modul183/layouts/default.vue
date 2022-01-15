@@ -109,6 +109,12 @@ export default {
           show: 'loggedIn'
         },
         {
+          icon: 'mdi-view-dashboard-edit',
+          title: 'Admin Dashboard',
+          to: '/admindashboard',
+          show: 'admin'
+        },
+        {
           icon: 'mdi-login',
           title: 'Login',
           to: '/auth/login',
@@ -125,7 +131,8 @@ export default {
       right: true,
       rightDrawer: false,
       title: 'Vuetify.js',
-      smsAuth: false
+      smsAuth: false,
+      isAdmin: false
     }
   },
   methods: {
@@ -133,12 +140,13 @@ export default {
       return !(this.$store.state.user === null)
     },
 
-    isSmsAuth () {
+    checkUserData () {
       if (this.loggedIn()) {
         const userId = this.$store.state.user.uid
         this.$fire.firestore.collection('users').doc(userId)
           .onSnapshot((doc) => {
             this.smsAuth = doc.data().smsAuth
+            this.isAdmin = doc.data().isAdmin
           })
       }
     },
@@ -146,7 +154,7 @@ export default {
     getFilteredItems () {
       const filteredArray = []
       const currentUser = this.$fire.auth.currentUser
-      this.isSmsAuth()
+      this.checkUserData()
       if (currentUser && currentUser.providerData[0].providerId !== 'password') {
         this.items.forEach((item) => {
           if ((this.loggedIn() && item.show !== 'loggedOut') || (!this.loggedIn() && item.show !== 'loggedIn')) {
@@ -156,7 +164,11 @@ export default {
       } else {
         this.items.forEach((item) => {
           if ((this.loggedIn() && this.smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !this.smsAuth)) && item.show !== 'loggedIn')) {
-            filteredArray.push(item)
+            if (item.show === 'admin' && this.isAdmin) {
+              filteredArray.push(item)
+            } else if (!(item.show === 'admin' && !this.isAdmin)) {
+              filteredArray.push(item)
+            }
           }
         })
       }

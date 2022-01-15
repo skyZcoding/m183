@@ -15,22 +15,32 @@
           {{ post.content }}
         </v-card-text>
         <v-divider />
-        <v-card-text class="author">
-          {{ post.author.email }}
-          <v-btn
-            v-if="post.author.uid === author.uid && post.status !== 'deleted'"
-            @click="deletePost"
-          >
-            <v-icon>
-              mdi-delete
-            </v-icon>
-          </v-btn>
-          <v-btn
-            v-else-if="post.author.uid === author.uid && post.status === 'deleted'"
-            @click="restorePost"
-          >
-            Restore
-          </v-btn>
+        <v-card-text class="postBottom">
+          <div class="postAuthor">
+            {{ post.author.email }}
+            <v-btn
+              v-if="post.author.uid === author.uid && post.status !== 'deleted'"
+              @click="deletePost"
+            >
+              <v-icon>
+                mdi-delete
+              </v-icon>
+            </v-btn>
+          </div>
+          <div class="postStatus">
+            Status: {{ post.status }}
+            <v-combobox
+              v-if="isAdmin"
+              v-model="selected"
+              :items="statusOptions"
+            />
+            <v-btn
+              v-if="isAdmin"
+              @click="updateStatus"
+            >
+              Update Status
+            </v-btn>
+          </div>
         </v-card-text>
       </v-card>
       <v-card v-else>
@@ -91,6 +101,9 @@ export default {
       comments: [],
       newComment: '',
       author: '',
+      isAdmin: false,
+      statusOptions: ['hidden', 'deleted', 'published'],
+      selected: '',
       snackbarText: 'No error message',
       snackbar: false
     }
@@ -98,14 +111,21 @@ export default {
 
   async fetch () {
     this.slug = this.$route.params.slug
+    // Check if logged
     if (this.$store.state.user) {
       this.author = this.$store.state.user
+      // Check if user is admin
+      const userInfo = await this.$fire.firestore.collection('users').doc(this.author.uid).get()
+      if (userInfo.data().isAdmin) {
+        this.isAdmin = true
+      }
     }
     const postInfo = await this.$fire.firestore.collection('posts').doc(this.slug).get()
     console.log(postInfo.data().author)
     // TODO: Get post if user is admin
-    if (postInfo.data().status === 'published' || postInfo.data().author.uid === this.author.uid) {
+    if (postInfo.data().status === 'published' || postInfo.data().author.uid === this.author.uid || this.isAdmin) {
       this.post = postInfo.data()
+      this.selected = this.post.status
 
       // Get comments
       const commentsInfo = await this.$fire.firestore.collection('comments').where('postSlug', '==', this.slug).get()
@@ -148,22 +168,29 @@ export default {
       return true
     },
     deletePost () {
+      const that = this
       this.$fire.firestore.collection('posts').doc(this.slug).update({
         status: 'deleted'
       })
         .catch(function (error) {
-          console.log(error)
+          that.snackbar = true
+          that.snackbarText = error
         })
         .then(this.$router.push('/'))
     },
-    restorePost () {
+    updateStatus () {
+      const that = this
       this.$fire.firestore.collection('posts').doc(this.slug).update({
-        status: 'hidden'
+        status: this.selected
       })
         .catch(function (error) {
-          console.log(error)
+          that.snackbar = true
+          that.snackbarText = error
         })
-        .then(this.$router.push('/'))
+        .then(function () {
+          that.snackbar = true
+          that.snackbarText = 'Updated post to status: ' + that.selected
+        })
     }
   }
 }
@@ -200,10 +227,17 @@ export default {
   font-size: 1em ;
 }
 
-.author {
+.postBottom {
   font-size: 0.8em;
   font-style: italic;
+}
+
+.postAuthor {
   text-align: right;
+}
+
+.postStatus {
+  text-align: left;
 }
 
 h1 {
