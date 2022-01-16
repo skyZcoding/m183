@@ -79,16 +79,6 @@ export default {
     }
   },
 
-  render: {
-    csp: {
-      hashAlgorithm: 'sha256',
-      policies: {
-        'frame-ancestors': ["'self'"]
-      },
-      addMeta: true
-    }
-  },
-
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {},
 
