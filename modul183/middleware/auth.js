@@ -1,7 +1,7 @@
 export default function ({ app, route, redirect }) {
   const user = app.$fire.auth.currentUser
 
-  if (route.path === '/blog/createpost') {
+  if (route.path !== '/auth/register' && route.path !== '/auth/login') {
     if (!user) {
       return redirect('/auth/register')
     } else {
