@@ -106,7 +106,7 @@ export default {
           icon: 'mdi-view-dashboard',
           title: 'User Dashboard',
           to: '/userdashboard',
-          show: 'loggedIn'
+          show: 'notAdmin'
         },
         {
           icon: 'mdi-view-dashboard-edit',
@@ -163,12 +163,23 @@ export default {
         })
       } else {
         this.items.forEach((item) => {
-          if ((this.loggedIn() && this.smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !this.smsAuth)) && item.show !== 'loggedIn')) {
-            if (item.show === 'admin' && this.isAdmin) {
-              filteredArray.push(item)
-            } else if (!(item.show === 'admin' && !this.isAdmin)) {
+          // if ((this.loggedIn() && this.smsAuth && item.show !== 'loggedOut') || ((!this.loggedIn() || (this.loggedIn() && !this.smsAuth)) && item.show !== 'loggedIn')) {
+          //   if (item.show === 'admin' && this.isAdmin) {
+          //     filteredArray.push(item)
+          //   } else if (!(item.show === 'admin' && !this.isAdmin)) {
+          //     filteredArray.push(item)
+          //   }
+          if (this.loggedIn() && this.smsAuth) {
+            if (item.show === 'loggedIn' || item.show === 'always') {
               filteredArray.push(item)
             }
+            if (item.show === 'admin' && this.isAdmin) {
+              filteredArray.push(item)
+            } else if (item.show === 'notAdmin' && !this.isAdmin) {
+              filteredArray.push(item)
+            }
+          } else if ((!this.loggedIn() || !this.smsAuth) && (item.show === 'always' || item.show === 'loggedOut')) {
+            filteredArray.push(item)
           }
         })
       }

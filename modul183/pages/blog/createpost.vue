@@ -25,6 +25,13 @@
       </v-card-text>
       <v-divider />
       <v-card-actions>
+        <div class="postStatus">
+          <v-combobox
+            v-if="isAdmin"
+            v-model="status"
+            :items="statusOptions"
+          />
+        </div>
         <v-btn
           color="info"
           @click="createPost()"
@@ -51,28 +58,44 @@ export default {
       content: '',
       author: '',
       status: 'hidden',
+      isAdmin: false,
+      statusOptions: ['hidden', 'published'],
       snackbar: false,
       snackbarText: ''
+    }
+  },
+
+  async fetch () {
+    // Check if user is admin
+    if (this.$store.state.user) {
+      this.author = this.$store.state.user
+
+      const userInfo = await this.$fire.firestore.collection('users').doc(this.author.uid).get()
+      if (userInfo.data().isAdmin) {
+        this.isAdmin = true
+      }
     }
   },
 
   methods: {
     createPost () {
       if (this.validatePost()) {
-        this.author = this.$store.state.user
-
-        try {
-          this.$fire.firestore.collection('posts').doc().set({
-            title: this.title,
-            content: this.content,
-            status: this.status,
-            author: this.author
-          })
-          // Clear new post inputs
-          this.title = ''
-          this.content = ''
-        } catch (error) {
-          console.log(error)
+        if (this.selected === 'hidden') {
+          // hge
+        } else {
+          try {
+            this.$fire.firestore.collection('posts').doc().set({
+              title: this.title,
+              content: this.content,
+              status: this.status,
+              author: this.author
+            })
+            // Clear new post inputs
+            this.title = ''
+            this.content = ''
+          } catch (error) {
+            console.log(error)
+          }
         }
       }
     },

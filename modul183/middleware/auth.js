@@ -19,5 +19,35 @@ export default function ({ app, route, redirect }) {
     if (user) {
       return redirect('/error')
     }
+  } else if (route.path === '/admindashboard') {
+    if (user) {
+      app.$fire.firestore.collection('users').doc(user.uid)
+        .get()
+        .then((querySnapshot) => {
+          if (!querySnapshot.data().isAdmin) {
+            return redirect('/error')
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    } else {
+      return redirect('/error')
+    }
+  } else if (route.path === '/userdashboard') {
+    if (user) {
+      app.$fire.firestore.collection('users').doc(user.uid)
+        .get()
+        .then((querySnapshot) => {
+          if (querySnapshot.data().isAdmin) {
+            return redirect('/error')
+          }
+        })
+        .catch(function (error) {
+          console.log(error)
+        })
+    } else {
+      return redirect('/error')
+    }
   }
 }
