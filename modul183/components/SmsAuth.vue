@@ -65,7 +65,8 @@ export default {
         success: false,
         mobileNumber: '',
         verificationCode: '',
-        generationDate: ''
+        generationDate: '',
+        isAdmin: false
       }
     }
   },
@@ -93,6 +94,7 @@ export default {
       snapshot.forEach((temp) => {
         const user = temp.data()
         this.auth.mobileNumber = user.mobile_number
+        this.auth.isAdmin = user.isAdmin
       })
       this.sendSmsCode()
     },
@@ -125,7 +127,11 @@ export default {
         this.auth.success = true
         this.dialog = false
         this.auth.verificationCode = ''
-        this.$router.push('/')
+        if (this.auth.isAdmin) {
+          this.$router.push('/admindashboard')
+        } else {
+          this.$router.push('/userdashboard')
+        }
       } else {
         this.error = 'The verification code is wrong'
       }
