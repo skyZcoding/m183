@@ -49,5 +49,7 @@ export default function ({ app, route, redirect }) {
     } else {
       return redirect('/error')
     }
+  } else if (route.path === '/api/posts') {
+    return redirect('http://localhost:8080/api/posts')
   }
 }

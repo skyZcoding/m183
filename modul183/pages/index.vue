@@ -43,7 +43,6 @@ export default {
   },
 
   async fetch () {
-    // TODO: Show hidden posts if user is admin
     const snapshot = await this.$fire.firestore.collection('posts').get()
     snapshot.forEach((post) => {
       this.tmpPost = post.data()

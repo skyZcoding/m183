@@ -59,6 +59,7 @@
 </template>
 
 <script>
+const speakeasy = require('speakeasy')
 export default {
   name: 'RegisterPage',
 
@@ -85,11 +86,21 @@ export default {
               isAdmin: false,
               smsAuth: true,
               mobile_number: that.auth.mobile_number,
-              uid: data.user.uid
+              uid: data.user.uid,
+              secret: that.createSecret()
             })
-            that.$router.push('/')
+            that.$router.push('/userdashboard')
           })
       }
+    },
+    createSecret () {
+      const secretPar = speakeasy.generateSecret()
+      const secret = {
+        base32: secretPar.base32,
+        ascii: secretPar.ascii
+      }
+      console.log('created secret: ' + secret)
+      return secret
     },
     hasLowerCase (str) {
       return (/[a-z]/.test(str))

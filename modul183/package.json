@@ -16,6 +16,8 @@
     "core-js": "^3.15.1",
     "firebase": "^9.6.0",
     "nuxt": "^2.15.7",
+    "qrcode": "^1.5.0",
+    "speakeasy": "2.0.0",
     "vuefire": "^2.2.5",
     "vuetify": "^2.5.5"
   },
@@ -24,6 +26,7 @@
     "@nuxtjs/eslint-config": "^6.0.1",
     "@nuxtjs/eslint-module": "^3.0.2",
     "@nuxtjs/vuetify": "^1.12.1",
+    "@types/speakeasy": "^2.0.7",
     "eslint": "^7.29.0",
     "eslint-plugin-nuxt": "^2.0.0",
     "eslint-plugin-vue": "^7.12.1"
