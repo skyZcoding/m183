@@ -106,7 +106,7 @@ export default {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-Api-Key': 'test'
+          'X-Api-Key': 'OAA4ADYAMwA5ADgAOQA1ADAAMQA3ADQAMQA1ADcAOAA1ADcA'
         },
         body: JSON.stringify(payload)
       })

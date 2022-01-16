@@ -115,6 +115,12 @@ export default {
           show: 'admin'
         },
         {
+          icon: 'mdi-user',
+          title: 'Profile',
+          to: '/profile',
+          show: 'profile'
+        },
+        {
           icon: 'mdi-login',
           title: 'Login',
           to: '/auth/login',
