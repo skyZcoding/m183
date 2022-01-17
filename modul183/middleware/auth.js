@@ -1,21 +1,6 @@
 export default function ({ app, route, redirect }) {
   const user = app.$fire.auth.currentUser
-
-  if (route.path !== '/auth/register' && route.path !== '/auth/login') {
-    if (!user && route.path !== '/' && !(route.path.includes('/blog') && route.path !== '/blog/createpost')) {
-      return redirect('/auth/register')
-    } else if (route.path !== '/' && !(route.path.includes('/blog') && route.path !== '/blog/createpost')) {
-      app.$fire.firestore.collection('users').where('uid', '==', user.uid)
-        .get()
-        .then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-            if (!doc.data().smsAuth) {
-              return redirect('/auth/register')
-            }
-          })
-        })
-    }
-  } else if (route.path === '/auth/register' || route.path === '/auth/login') {
+  if (route.path === '/auth/register' || route.path === '/auth/login') {
     if (user) {
       return redirect('/error')
     }
@@ -51,5 +36,19 @@ export default function ({ app, route, redirect }) {
     }
   } else if (route.path === '/api/posts') {
     return redirect('http://localhost:8080/api/posts')
+  } else if (route.path !== '/auth/register' && route.path !== '/auth/login') {
+    if (!user && route.path !== '/' && !(route.path.includes('/blog') && route.path !== '/blog/createpost')) {
+      return redirect('/auth/register')
+    } else if (route.path !== '/' && !(route.path.includes('/blog') && route.path !== '/blog/createpost')) {
+      app.$fire.firestore.collection('users').where('uid', '==', user.uid)
+        .get()
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            if (!doc.data().smsAuth) {
+              return redirect('/auth/register')
+            }
+          })
+        })
+    }
   }
 }
