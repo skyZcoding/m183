@@ -2,9 +2,9 @@ export default function ({ app, route, redirect }) {
   const user = app.$fire.auth.currentUser
 
   if (route.path !== '/auth/register' && route.path !== '/auth/login') {
-    if (!user) {
+    if (!user && route.path !== '/') {
       return redirect('/auth/register')
-    } else {
+    } else if (route.path !== '/') {
       app.$fire.firestore.collection('users').where('uid', '==', user.uid)
         .get()
         .then((querySnapshot) => {
