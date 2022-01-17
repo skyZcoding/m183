@@ -92,7 +92,7 @@ export default {
   methods: {
     createPost () {
       if (this.validatePost()) {
-        if (this.status === 'hidden') {
+        if (this.status === 'hidden' && this.isAdmin) {
           if (this.validateTOTP()) {
             console.log('before publish')
             this.publishPost()
