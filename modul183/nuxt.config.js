@@ -52,8 +52,13 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
-    '@nuxtjs/firebase'
+    '@nuxtjs/firebase',
+    'nuxt-helmet'
   ],
+
+  helmet: {
+    frameguard: true
+  },
 
   firebase: {
     config: {
