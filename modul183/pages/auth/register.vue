@@ -117,6 +117,12 @@ export default {
         return false
       }
 
+      if (this.auth.mobile_number < 41700000000 || this.auth.mobile_number > 41799999999) {
+        this.snackbarText = 'The "Mobile number" has two be between 41700000000 and 41799999999'
+        this.snackbar = true
+        return false
+      }
+
       if (!this.hasLowerCase(this.auth.password)) {
         this.snackbarText = 'The "Password" has to contain lowercase characters'
         this.snackbar = true
