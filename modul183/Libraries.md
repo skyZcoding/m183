@@ -26,3 +26,7 @@ Wir verwenden auch während dem Projekt eslint um unser Code auf einem gewissen 
 # firebase
 
 Das firebase Package wird gebraucht um die Cloud Platform firebase von Google in dem Projekt verweden werden können. In firebase speichern wir all unsere Einträge und das Login Handling wird auch bereits primär von firebase übernommen. Wir entschieden uns firebase zu verwenden, da es leicht zu gebrauchen ist, bereits auch einiges für uns übernimmt und auch sehr leicht zu integrieren mit nuxt js ist. Firebase übernimmt auch bereits einen Grossteil von der Sicherheits Handhabung und kann die Sicherheitskonzepte auch wahrscheinlich besser als wir umsetzen.
+
+# vuetify
+
+Das vuetify Package wird als Design Library gebraucht, um uns das Gestallten der Webseite zu erleichtern und dies auch schön umzusetzen können. Vuetify ist ein Design Library für vue.js um Material Design von Google zu benutzen.
