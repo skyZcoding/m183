@@ -62,13 +62,13 @@ export default {
 
   firebase: {
     config: {
-      apiKey: 'AIzaSyCPt-GGT_56-3Ugkubl-TIZGeBeDW_B46E',
-      authDomain: 'm183-327010.firebaseapp.com',
-      projectId: 'm183-327010',
-      storageBucket: 'm183-327010.appspot.com',
-      messagingSenderId: '443857643191',
-      appId: '1:443857643191:web:07cd449741360a588acf32',
-      measurementId: 'G-V2QY373MYH'
+      apiKey: 'test',
+      authDomain: 'test',
+      projectId: 'test',
+      storageBucket: 'test',
+      messagingSenderId: 'test',
+      appId: 'test',
+      measurementId: 'test'
 
     },
     services: {
